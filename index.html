@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saptarshi · AI Engineering Portfolio</title>
+<meta name="description" content="Saptarshi: Master of Data Science student at Monash University and ex-PwC Intelligent Automation. Building RAG pipelines, multi-agent systems, and the evals to prove they work.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F1F1EB;
+    --dot: #D9D9CF;
+    --ink: #171614;
+    --muted: #6E6D66;
+    --card: #FFFFFF;
+    --orange: #FF4D00;
+    --orange-soft: #FFE3D6;
+    --display: "Archivo Black", system-ui, sans-serif;
+    --body: "Instrument Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --shadow: 4px 4px 0 var(--ink);
+    --shadow-lift: 6px 6px 0 var(--ink);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--dot) 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--orange); color: var(--paper); }
+
+  a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--orange); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  a:hover { color: var(--orange); }
+  a:focus-visible, [tabindex]:focus-visible {
+    outline: 3px solid var(--orange);
+    outline-offset: 3px;
+  }
+
+  .wrap { max-width: 1020px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Hero ---------- */
+  header { padding: 56px 0 20px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 18px;
+  }
+  .eyebrow b { color: var(--orange); font-weight: 600; }
+  h1 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(44px, 8.5vw, 92px);
+    line-height: 0.98; letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  h1 .hollow {
+    color: transparent;
+    -webkit-text-stroke: 2px var(--ink);
+    display: block;
+    font-size: 0.55em;
+    margin-top: 6px;
+  }
+  .lede { margin-top: 20px; max-width: 640px; font-size: 18px; }
+  .lede b { background: var(--orange-soft); padding: 0 4px; font-weight: 600; }
+
+  .spec {
+    margin-top: 24px; display: inline-block;
+    font-family: var(--mono); font-size: 13px; line-height: 2;
+    background: var(--card); border: 2px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 12px 18px;
+  }
+  .spec .k { color: var(--muted); }
+  .spec .arrow { color: var(--orange); font-weight: 600; }
+
+  /* ---------- Graph nav ---------- */
+  .graph-wrap { position: relative; margin: 8px 0 0; }
+  .graph-hint {
+    position: absolute; top: 10px; right: 12px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    letter-spacing: 0.05em; text-transform: uppercase;
+    pointer-events: none;
+  }
+  #graph { width: 100%; height: auto; display: block; }
+  #graph .node { cursor: pointer; }
+  #graph .node .box { transition: fill 0.15s ease; }
+  #graph .node:hover .box, #graph .node:focus-visible .box { stroke: var(--orange); }
+  #graph .node:hover .nshadow { fill: var(--orange); }
+  #graph .node text { user-select: none; pointer-events: none; }
+  #graph .edge { transition: stroke 0.15s ease; }
+
+  /* ---------- Pipeline nav (sticky scrollspy) ---------- */
+  .pipeline {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--paper);
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    overflow-x: auto;
+  }
+  .pipeline-inner {
+    display: flex; align-items: center;
+    max-width: 1020px; margin: 0 auto; padding: 12px 24px;
+    min-width: max-content;
+  }
+  .pnode {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.04em;
+    color: var(--ink); text-decoration: none; white-space: nowrap;
+  }
+  .pnode:hover { color: var(--orange); }
+  .pnode i {
+    width: 12px; height: 12px; border: 2px solid var(--ink);
+    border-radius: 50%; background: var(--paper); flex-shrink: 0;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .pnode.active { color: var(--orange); }
+  .pnode.active i { background: var(--orange); border-color: var(--orange); }
+  .pipe {
+    width: 34px; height: 2px; background: var(--ink); margin: 0 10px; flex-shrink: 0;
+  }
+  @media (max-width: 640px) {
+    .pnode span { display: none; }
+    .pnode.active span { display: inline; }
+    .pipe { width: 20px; }
+  }
+
+  /* ---------- Sections ---------- */
+  .section { padding: 88px 0; }
+  .section-head { margin-bottom: 36px; }
+  .section-label {
+    display: inline-block;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--paper);
+    background: var(--ink); padding: 4px 10px; margin-bottom: 14px;
+  }
+  h2 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(26px, 4.5vw, 40px); text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .section-sub { margin-top: 10px; color: var(--muted); max-width: 580px; font-size: 15.5px; }
+
+  /* ---------- Projects ---------- */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--card);
+    border: 2px solid var(--ink);
+    box-shadow: var(--shadow);
+    padding: 22px 22px 16px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-lift);
+  }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .card h3 { font-family: var(--mono); font-weight: 600; font-size: 17px; }
+  .chip {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 3px 9px; border: 2px solid var(--ink); white-space: nowrap;
+  }
+  .chip-shipped { background: var(--card); color: var(--ink); }
+  .chip-active { background: var(--orange); border-color: var(--orange); color: var(--paper); }
+  .card p { font-size: 15px; color: #3B3A36; flex: 1; }
+  .metrics {
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    border-top: 2px dashed var(--dot); padding-top: 11px; line-height: 1.8;
+    word-break: break-word;
+  }
+  .card-link { font-size: 14px; font-weight: 600; }
+
+  /* ---------- Experience ---------- */
+  .xp {
+    display: flex; gap: 32px; align-items: baseline;
+    background: var(--card); border: 2px solid var(--ink); box-shadow: var(--shadow);
+    padding: 26px;
+  }
+  @media (max-width: 640px) { .xp { flex-direction: column; gap: 8px; } }
+  .xp-when { font-family: var(--mono); font-size: 13px; color: var(--muted); min-width: 160px; }
+  .xp h3 { font-family: var(--mono); font-weight: 600; font-size: 19px; margin-bottom: 4px; }
+  .xp .role { color: var(--orange); font-size: 13.5px; margin-bottom: 12px; font-family: var(--mono); }
+  .xp p { max-width: 640px; font-size: 15.5px; }
+
+  /* ---------- Open source ---------- */
+  .oss-list { display: flex; flex-direction: column; border: 2px solid var(--ink); background: var(--card); box-shadow: var(--shadow); }
+  .oss-item {
+    display: flex; gap: 26px; padding: 16px 22px; align-items: baseline;
+    border-bottom: 2px dashed var(--dot);
+  }
+  .oss-item:last-child { border-bottom: none; }
+  .oss-item:hover { background: var(--orange-soft); }
+  .oss-name { font-family: var(--mono); font-size: 14px; font-weight: 600; min-width: 120px; }
+  .oss-desc { font-size: 15px; color: #3B3A36; }
+  @media (max-width: 640px) { .oss-item { flex-direction: column; gap: 3px; } }
+
+  /* ---------- Skills ---------- */
+  .skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 30px; }
+  .skill-group h3 {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 13px; font-weight: 600;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 9px; }
+  .tag {
+    font-family: var(--mono); font-size: 12.5px; padding: 5px 11px;
+    border: 2px solid var(--ink); background: var(--card);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .tag:hover { transform: translate(-1px, -1px); box-shadow: 2px 2px 0 var(--ink); }
+
+  /* ---------- Education ---------- */
+  .edu { background: var(--card); border: 2px solid var(--ink); box-shadow: var(--shadow); padding: 24px; }
+  .edu h3 { font-family: var(--mono); font-weight: 600; font-size: 18px; }
+  .edu .meta { font-family: var(--mono); font-size: 13px; color: var(--muted); margin: 6px 0 12px; }
+  .edu p { max-width: 640px; font-size: 15.5px; }
+  .edu + .edu { margin-top: 24px; }
+
+  /* ---------- Contact ---------- */
+  .contact-big a {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(20px, 4.5vw, 42px); text-transform: lowercase;
+    color: var(--ink); text-decoration: none;
+    border-bottom: 4px solid var(--orange);
+  }
+  .contact-big a:hover { color: var(--orange); }
+  .contact-links { margin-top: 24px; display: flex; gap: 28px; flex-wrap: wrap; font-size: 15.5px; font-weight: 500; }
+
+  .btn {
+    font-family: var(--mono); font-weight: 600; font-size: 14px;
+    padding: 12px 22px; display: inline-block; text-decoration: none;
+    border: 2px solid var(--ink); transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow); color: inherit; }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:hover { color: var(--paper); }
+  .btn-ghost { background: var(--card); color: var(--ink); }
+  .cta-row { margin-top: 28px; display: flex; gap: 16px; flex-wrap: wrap; }
+
+  footer {
+    border-top: 2px solid var(--ink);
+    padding: 28px 0 48px;
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+
+  /* ---------- Reveal ---------- */
+  .reveal { opacity: 1; transform: none; }
+  .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .js .reveal.visible { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    .card, .tag, .btn { transition: none; }
+    #graph .pulse { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Melbourne, Australia · <b>open</b> to DS / AI engineering internships</p>
+    <h1>
+      Saptarshi<!-- TODO: surname -->
+      <span class="hollow">builds &amp; evals ai systems</span>
+    </h1>
+    <p class="lede">
+      Master of Data Science student at Monash, previously 2.5 years in Intelligent
+      Automation at PwC India. I build <b>agent graphs</b> for a living,
+      so the navigation below is one. Drag the nodes around, click one to jump.
+    </p>
+    <div class="spec">
+      <span class="k">pipeline:</span> pwc(2.5y) <span class="arrow">→</span> monash(mds) <span class="arrow">→</span> your_team(2026)<br>
+      <span class="k">focus:&nbsp;&nbsp;&nbsp;</span> rag · evals · multi-agent systems
+    </div>
+  </header>
+
+  <div class="graph-wrap">
+    <span class="graph-hint">drag nodes · dbl-click canvas to reset</span>
+    <svg id="graph" role="navigation" aria-label="Site navigation graph"></svg>
+  </div>
+</div>
+
+<nav class="pipeline" aria-label="Section navigation">
+  <div class="pipeline-inner">
+    <a class="pnode" href="#projects" data-spy="projects"><i></i><span>projects</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="#experience" data-spy="experience"><i></i><span>experience</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="#opensource" data-spy="opensource"><i></i><span>open_source</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="#skills" data-spy="skills"><i></i><span>skills</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="#education" data-spy="education"><i></i><span>education</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="#contact" data-spy="contact"><i></i><span>contact</span></a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <section class="section reveal" id="projects">
+    <div class="section-head">
+      <p class="section-label">node: projects</p>
+      <h2>Built and measured</h2>
+      <p class="section-sub">Every project ships with the metric or infrastructure line that proves it works.</p>
+    </div>
+    <div class="grid">
+
+      <article class="card">
+        <div class="card-head">
+          <h3>rag-pilot</h3>
+          <span class="chip chip-active">active</span>
+        </div>
+        <p>
+          Local-first RAG over my coursework notes. Llama 3.2 3B on Ollama, ChromaDB
+          retrieval with sentence-transformers embeddings, served through FastAPI.
+          Ships with an eval harness for retrieval quality and answer faithfulness,
+          with LangChain and LangGraph rebuilds in progress.
+        </p>
+        <div class="metrics">stack: ollama · llama-3.2-3b · chromadb · fastapi<br>eval: retrieval + faithfulness harness</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>BankGuard</h3>
+          <span class="chip chip-active">active</span>
+        </div>
+        <p>
+          Multi-agent fraud detection built on LangGraph with AWS Bedrock models.
+          Agents triage transactions, flag anomalies and coordinate escalation, with
+          prompt injection mitigations designed into the agent boundaries.
+        </p>
+        <div class="metrics">stack: langgraph · aws bedrock<br>security: prompt-injection mitigations at agent boundaries</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>CloudEco</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Wildlife detection API using YOLOv8n with FastAPI, Redis caching and GZip
+          middleware, deployed on a hand-built kubeadm Kubernetes cluster across three
+          GCP VMs. Configured networking, health probes and load tests myself.
+        </p>
+        <div class="metrics">infra: kubeadm · 3 gcp vms · flannel cni<br>probes: liveness + readiness · load: locust</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>SolarRisk</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Satellite collision risk forecasting with ARIMA. Ingests CelesTrak TLE data
+          and NOAA F10.7 solar flux readings to produce a Collision Risk Index designed
+          for parametric insurance pricing.
+        </p>
+        <div class="metrics">data: celestrak tle · noaa f10.7 flux<br>model: arima → collision risk index</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>Search Ranking System</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Search recommendation engine combining TF-IDF relevance with
+          position-bias-corrected click-through signals, on a FastAPI and SQLAlchemy
+          backend. Evaluated offline with standard ranking metrics.
+        </p>
+        <div class="metrics">ranking: tf-idf + bias-corrected ctr<br>eval: precision@k · ndcg@k</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>Tweet Emotion Classifier</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Six-class emotion classifier for tweets using a Bidirectional LSTM, trained
+          on the dair-ai Emotions dataset from Hugging Face.
+        </p>
+        <div class="metrics">model: bilstm · 6-class<br>data: dair-ai emotions (hugging face)</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+    </div>
+  </section>
+
+  <section class="section reveal" id="experience">
+    <div class="section-head">
+      <p class="section-label">node: experience</p>
+      <h2>Industry background</h2>
+    </div>
+    <div class="xp">
+      <div class="xp-when">2021 - 2024 <!-- TODO: exact dates --></div>
+      <div>
+        <h3>PwC India</h3>
+        <p class="role">intelligent_automation <!-- TODO: exact job title --></p>
+        <p>
+          2.5 years delivering automation for enterprise clients: RPA build-outs,
+          process intelligence and mining with SAP Signavio, and workflow automation
+          on ServiceNow. Carried solutions from process discovery through to production.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="opensource">
+    <div class="section-head">
+      <p class="section-label">node: open_source</p>
+      <h2>Contributions</h2>
+    </div>
+    <div class="oss-list">
+      <div class="oss-item">
+        <span class="oss-name">wireup</span>
+        <span class="oss-desc">Starlette and FastAPI integration improvements, caching work and documentation.</span>
+      </div>
+      <div class="oss-item">
+        <span class="oss-name">drt</span>
+        <span class="oss-desc">Designed and shipped an SMTP email destination feature: config models, CLI wiring and message batching.</span>
+      </div>
+      <div class="oss-item">
+        <span class="oss-name">PDSNO</span>
+        <span class="oss-desc">Data cleanup utility with a 43-test suite.</span>
+      </div>
+      <div class="oss-item">
+        <span class="oss-name">opendraft</span>
+        <span class="oss-desc">Active contributor, PR work under maintainer review.</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="skills">
+    <div class="section-head">
+      <p class="section-label">node: skills</p>
+      <h2>What I work with</h2>
+    </div>
+    <div class="skills">
+      <div class="skill-group">
+        <h3>AI engineering</h3>
+        <div class="tags">
+          <span class="tag">RAG pipelines</span><span class="tag">LangChain</span><span class="tag">LangGraph</span>
+          <span class="tag">AWS Bedrock</span><span class="tag">Ollama</span><span class="tag">ChromaDB</span>
+          <span class="tag">LLM evals</span><span class="tag">Prompt injection defense</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>ML &amp; data</h3>
+        <div class="tags">
+          <span class="tag">Python</span><span class="tag">R</span><span class="tag">SQL</span>
+          <span class="tag">scikit-learn</span><span class="tag">Time series (ARIMA)</span>
+          <span class="tag">NLP</span><span class="tag">Computer vision (YOLOv8)</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Infrastructure</h3>
+        <div class="tags">
+          <span class="tag">Docker</span><span class="tag">Kubernetes</span><span class="tag">GCP</span>
+          <span class="tag">AWS</span><span class="tag">FastAPI</span><span class="tag">Redis</span>
+          <span class="tag">Locust</span><span class="tag">Git</span>
+        </div>
+      </div>
+      <div class="skill-group">
+        <h3>Enterprise automation</h3>
+        <div class="tags">
+          <span class="tag">RPA</span><span class="tag">SAP Signavio</span>
+          <span class="tag">ServiceNow</span><span class="tag">Process mining</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section reveal" id="education">
+    <div class="section-head">
+      <p class="section-label">node: education</p>
+      <h2>Education</h2>
+    </div>
+    <div class="edu">
+      <h3>Master of Data Science · Monash University</h3>
+      <p class="meta">melbourne · expected 2027 <!-- TODO: verify graduation year --></p>
+      <p>
+        Latest semester: four High Distinctions and one Distinction, WAM 82.
+        <!-- TODO: verify WAM and update as new results land -->
+        Entering the thesis year with a focus on applied AI engineering.
+      </p>
+    </div>
+    <div class="edu">
+      <h3>Bachelor of Technology <!-- TODO: degree name --></h3>
+      <p class="meta"><!-- TODO: university · years --></p>
+    </div>
+  </section>
+
+  <section class="section reveal" id="contact">
+    <div class="section-head">
+      <p class="section-label">node: contact</p>
+      <h2>Get in touch</h2>
+    </div>
+    <p class="contact-big"><a href="mailto:hello@example.com">hello@example.com</a></p> <!-- TODO: real email -->
+    <div class="contact-links">
+      <a href="https://github.com/sap6011" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="#" target="_blank" rel="noopener">LinkedIn ↗</a> <!-- TODO: LinkedIn URL -->
+    </div>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="mailto:hello@example.com">Email me</a> <!-- TODO: real email -->
+      <a class="btn btn-ghost" href="https://github.com/sap6011" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© <span id="year">2026</span> Saptarshi</span>
+    <span>hand-wired svg graph · single html file · no frameworks · no cyan</span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  document.documentElement.classList.add("js");
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var SVG_NS = "http://www.w3.org/2000/svg";
+
+  /* ================= Graph navigation ================= */
+
+  var svg = document.getElementById("graph");
+
+  var NODES = [
+    { id: "root",       label: "saptarshi",   href: null,          root: true },
+    { id: "projects",   label: "projects",    href: "#projects" },
+    { id: "experience", label: "experience",  href: "#experience" },
+    { id: "opensource", label: "open_source", href: "#opensource" },
+    { id: "skills",     label: "skills",      href: "#skills" },
+    { id: "education",  label: "education",   href: "#education" },
+    { id: "contact",    label: "contact",     href: "#contact" }
+  ];
+
+  /* Two layouts: wide (landscape) and narrow (portrait) */
+  var LAYOUTS = {
+    wide: {
+      viewBox: [0, 0, 1000, 520],
+      pos: {
+        root:       [500, 260],
+        projects:   [160, 120],
+        experience: [845, 110],
+        opensource: [150, 415],
+        skills:     [860, 400],
+        education:  [455, 62],
+        contact:    [540, 465]
+      }
+    },
+    narrow: {
+      viewBox: [0, 0, 620, 700],
+      pos: {
+        root:       [310, 350],
+        projects:   [140, 130],
+        experience: [480, 140],
+        opensource: [120, 360],
+        skills:     [500, 370],
+        education:  [300, 90],
+        contact:    [310, 610]
+      }
+    }
+  };
+
+  var mode = window.innerWidth < 700 ? "narrow" : "wide";
+  var positions = {};
+  var nodeEls = {};
+  var edges = [];       /* { path, pulse, motion, to } */
+  var edgesLayer, nodesLayer;
+
+  function copyPositions() {
+    var src = LAYOUTS[mode].pos;
+    positions = {};
+    for (var k in src) positions[k] = [src[k][0], src[k][1]];
+  }
+
+  function edgePath(from, to) {
+    var x1 = positions[from][0], y1 = positions[from][1];
+    var x2 = positions[to][0],   y2 = positions[to][1];
+    var mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+    /* Perpendicular offset for a gentle hand-drawn curve */
+    var dx = x2 - x1, dy = y2 - y1;
+    var len = Math.sqrt(dx * dx + dy * dy) || 1;
+    var ox = (-dy / len) * 26, oy = (dx / len) * 26;
+    return "M " + x1 + " " + y1 + " Q " + (mx + ox) + " " + (my + oy) + " " + x2 + " " + y2;
+  }
+
+  function nodeSize(n) {
+    var w = n.label.length * 9 + 40;
+    var h = n.root ? 56 : 44;
+    if (n.root) w += 24;
+    return [w, h];
+  }
+
+  function buildGraph() {
+    svg.innerHTML = "";
+    var vb = LAYOUTS[mode].viewBox;
+    svg.setAttribute("viewBox", vb.join(" "));
+
+    /* Arrowhead marker */
+    var defs = document.createElementNS(SVG_NS, "defs");
+    defs.innerHTML =
+      '<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">' +
+      '<path d="M 0 0 L 10 5 L 0 10 z" fill="#171614"></path></marker>';
+    svg.appendChild(defs);
+
+    edgesLayer = document.createElementNS(SVG_NS, "g");
+    nodesLayer = document.createElementNS(SVG_NS, "g");
+    svg.appendChild(edgesLayer);
+    svg.appendChild(nodesLayer);
+
+    edges = [];
+    nodeEls = {};
+
+    /* Edges from root to every tab node */
+    NODES.forEach(function (n, idx) {
+      if (n.root) return;
+      var d = edgePath("root", n.id);
+
+      var path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("class", "edge");
+      path.setAttribute("d", d);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "#171614");
+      path.setAttribute("stroke-width", "2");
+      path.setAttribute("marker-end", "url(#arrow)");
+      edgesLayer.appendChild(path);
+
+      /* Pulse dot travelling along the edge */
+      var pulse = document.createElementNS(SVG_NS, "circle");
+      pulse.setAttribute("class", "pulse");
+      pulse.setAttribute("r", "4.5");
+      pulse.setAttribute("fill", "#FF4D00");
+      var motion = document.createElementNS(SVG_NS, "animateMotion");
+      motion.setAttribute("dur", (3.6 + idx * 0.55).toFixed(2) + "s");
+      motion.setAttribute("repeatCount", "indefinite");
+      motion.setAttribute("path", d);
+      pulse.appendChild(motion);
+      if (!reduced) edgesLayer.appendChild(pulse);
+
+      edges.push({ path: path, pulse: pulse, motion: motion, to: n.id });
+    });
+
+    /* Nodes */
+    NODES.forEach(function (n) {
+      var size = nodeSize(n);
+      var w = size[0], h = size[1];
+
+      var g = document.createElementNS(SVG_NS, "g");
+      g.setAttribute("class", "node");
+      g.setAttribute("data-id", n.id);
+      if (n.href) {
+        g.setAttribute("role", "link");
+        g.setAttribute("tabindex", "0");
+        g.setAttribute("aria-label", "Go to " + n.label + " section");
+      } else {
+        g.setAttribute("aria-label", n.label);
+      }
+
+      var shadow = document.createElementNS(SVG_NS, "rect");
+      shadow.setAttribute("class", "nshadow");
+      shadow.setAttribute("x", -w / 2 + 4);
+      shadow.setAttribute("y", -h / 2 + 4);
+      shadow.setAttribute("width", w);
+      shadow.setAttribute("height", h);
+      shadow.setAttribute("rx", n.root ? h / 2 : 8);
+      shadow.setAttribute("fill", "#171614");
+
+      var box = document.createElementNS(SVG_NS, "rect");
+      box.setAttribute("class", "box");
+      box.setAttribute("x", -w / 2);
+      box.setAttribute("y", -h / 2);
+      box.setAttribute("width", w);
+      box.setAttribute("height", h);
+      box.setAttribute("rx", n.root ? h / 2 : 8);
+      box.setAttribute("fill", n.root ? "#171614" : "#FFFFFF");
+      box.setAttribute("stroke", "#171614");
+      box.setAttribute("stroke-width", "2");
+
+      var text = document.createElementNS(SVG_NS, "text");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("dominant-baseline", "central");
+      text.setAttribute("font-family", "IBM Plex Mono, monospace");
+      text.setAttribute("font-size", n.root ? "17" : "14");
+      text.setAttribute("font-weight", "600");
+      text.setAttribute("fill", n.root ? "#F1F1EB" : "#171614");
+      text.textContent = n.label;
+
+      g.appendChild(shadow);
+      g.appendChild(box);
+      g.appendChild(text);
+      nodesLayer.appendChild(g);
+      nodeEls[n.id] = g;
+      setNodeTransform(n.id);
+
+      attachNodeBehavior(g, n);
+    });
+  }
+
+  function setNodeTransform(id) {
+    nodeEls[id].setAttribute("transform", "translate(" + positions[id][0] + " " + positions[id][1] + ")");
+  }
+
+  function refreshEdges(nodeId) {
+    edges.forEach(function (e) {
+      if (nodeId && e.to !== nodeId && nodeId !== "root") return;
+      var d = edgePath("root", e.to);
+      e.path.setAttribute("d", d);
+      e.motion.setAttribute("path", d);
+    });
+  }
+
+  function svgPoint(evt) {
+    var pt = svg.createSVGPoint();
+    pt.x = evt.clientX;
+    pt.y = evt.clientY;
+    return pt.matrixTransform(svg.getScreenCTM().inverse());
+  }
+
+  function attachNodeBehavior(g, n) {
+    var dragging = false, moved = false, offX = 0, offY = 0;
+
+    g.style.touchAction = "none";
+
+    g.addEventListener("pointerdown", function (evt) {
+      dragging = true; moved = false;
+      var p = svgPoint(evt);
+      offX = p.x - positions[n.id][0];
+      offY = p.y - positions[n.id][1];
+      g.setPointerCapture(evt.pointerId);
+      evt.preventDefault();
+    });
+
+    g.addEventListener("pointermove", function (evt) {
+      if (!dragging) return;
+      var p = svgPoint(evt);
+      var nx = p.x - offX, ny = p.y - offY;
+      if (Math.abs(nx - positions[n.id][0]) > 3 || Math.abs(ny - positions[n.id][1]) > 3) moved = true;
+      positions[n.id] = [nx, ny];
+      setNodeTransform(n.id);
+      refreshEdges(n.id);
+    });
+
+    g.addEventListener("pointerup", function (evt) {
+      dragging = false;
+      g.releasePointerCapture(evt.pointerId);
+      if (!moved && n.href) {
+        var target = document.querySelector(n.href);
+        if (target) target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+      }
+    });
+
+    g.addEventListener("keydown", function (evt) {
+      if ((evt.key === "Enter" || evt.key === " ") && n.href) {
+        evt.preventDefault();
+        var target = document.querySelector(n.href);
+        if (target) target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+      }
+    });
+  }
+
+  /* Double-click canvas resets positions */
+  svg.addEventListener("dblclick", function () {
+    copyPositions();
+    NODES.forEach(function (n) { setNodeTransform(n.id); });
+    refreshEdges();
+  });
+
+  /* Rebuild if crossing the breakpoint */
+  window.addEventListener("resize", function () {
+    var next = window.innerWidth < 700 ? "narrow" : "wide";
+    if (next !== mode) {
+      mode = next;
+      copyPositions();
+      buildGraph();
+    }
+  });
+
+  copyPositions();
+  buildGraph();
+
+  /* ================= Scroll reveals ================= */
+  var sections = document.querySelectorAll(".reveal");
+  if (!reduced && "IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.08 });
+    sections.forEach(function (s) { io.observe(s); });
+  } else {
+    sections.forEach(function (s) { s.classList.add("visible"); });
+  }
+
+  /* ================= Pipeline scrollspy ================= */
+  var spyLinks = document.querySelectorAll(".pnode");
+  var spyMap = {};
+  spyLinks.forEach(function (a) { spyMap[a.getAttribute("data-spy")] = a; });
+
+  if ("IntersectionObserver" in window) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          spyLinks.forEach(function (a) { a.classList.remove("active"); });
+          var link = spyMap[e.target.id];
+          if (link) link.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-35% 0px -55% 0px" });
+    document.querySelectorAll(".section").forEach(function (s) { spy.observe(s); });
+  }
+})();
+</script>
+
+</body>
+</html>
