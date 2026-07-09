@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects · Saptarshi</title>
+<meta name="description" content="Projects by Saptarshi: rag-pilot, BankGuard, CloudEco, SolarRisk and more. RAG, multi-agent systems, Kubernetes deployments, all measured with evals.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="pipeline" aria-label="Site navigation">
+  <div class="pipeline-inner">
+    <a class="pnode root" href="index.html"><i></i><span>saptarshi</span></a>
+    <span class="pipe"></span>
+    <a class="pnode active" href="projects.html"><i></i><span>projects</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="experience.html"><i></i><span>experience</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="opensource.html"><i></i><span>open_source</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="skills.html"><i></i><span>skills</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="education.html"><i></i><span>education</span></a>
+    <span class="pipe"></span>
+    <a class="pnode" href="contact.html"><i></i><span>contact</span></a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <main class="page">
+    <div class="page-head reveal">
+      <p class="section-label">node: projects</p>
+      <h2>Built and measured</h2>
+      <p class="section-sub">Every project ships with the metric or infrastructure line that proves it works.</p>
+    </div>
+
+    <div class="grid reveal">
+
+      <article class="card">
+        <div class="card-head">
+          <h3>rag-pilot</h3>
+          <span class="chip chip-active">active</span>
+        </div>
+        <p>
+          Local-first RAG over my coursework notes. Llama 3.2 3B on Ollama, ChromaDB
+          retrieval with sentence-transformers embeddings, served through FastAPI.
+          Ships with an eval harness for retrieval quality and answer faithfulness,
+          with LangChain and LangGraph rebuilds in progress.
+        </p>
+        <div class="metrics">stack: ollama · llama-3.2-3b · chromadb · fastapi<br>eval: retrieval + faithfulness harness</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>BankGuard</h3>
+          <span class="chip chip-active">active</span>
+        </div>
+        <p>
+          Multi-agent fraud detection built on LangGraph with AWS Bedrock models.
+          Agents triage transactions, flag anomalies and coordinate escalation, with
+          prompt injection mitigations designed into the agent boundaries.
+        </p>
+        <div class="metrics">stack: langgraph · aws bedrock<br>security: prompt-injection mitigations at agent boundaries</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>CloudEco</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Wildlife detection API using YOLOv8n with FastAPI, Redis caching and GZip
+          middleware, deployed on a hand-built kubeadm Kubernetes cluster across three
+          GCP VMs. Configured networking, health probes and load tests myself.
+        </p>
+        <div class="metrics">infra: kubeadm · 3 gcp vms · flannel cni<br>probes: liveness + readiness · load: locust</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>SolarRisk</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Satellite collision risk forecasting with ARIMA. Ingests CelesTrak TLE data
+          and NOAA F10.7 solar flux readings to produce a Collision Risk Index designed
+          for parametric insurance pricing.
+        </p>
+        <div class="metrics">data: celestrak tle · noaa f10.7 flux<br>model: arima → collision risk index</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>Search Ranking System</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Search recommendation engine combining TF-IDF relevance with
+          position-bias-corrected click-through signals, on a FastAPI and SQLAlchemy
+          backend. Evaluated offline with standard ranking metrics.
+        </p>
+        <div class="metrics">ranking: tf-idf + bias-corrected ctr<br>eval: precision@k · ndcg@k</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+      <article class="card">
+        <div class="card-head">
+          <h3>Tweet Emotion Classifier</h3>
+          <span class="chip chip-shipped">shipped</span>
+        </div>
+        <p>
+          Six-class emotion classifier for tweets using a Bidirectional LSTM, trained
+          on the dair-ai Emotions dataset from Hugging Face.
+        </p>
+        <div class="metrics">model: bilstm · 6-class<br>data: dair-ai emotions (hugging face)</div>
+        <a class="card-link" href="https://github.com/sap6011" target="_blank" rel="noopener">View repo ↗</a> <!-- TODO: exact repo URL -->
+      </article>
+
+    </div>
+
+    <a class="next-node" href="experience.html">next_node: experience →</a>
+  </main>
+
+  <footer>
+    <span>© <span id="year">2026</span> Saptarshi</span>
+    <span>node 1 of 6</span>
+  </footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
